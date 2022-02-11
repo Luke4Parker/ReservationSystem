@@ -93,5 +93,38 @@ namespace ReservationSystem.Controllers
                 return ValidationProblem(e.Message);
             }
         }
+
+        [HttpPatch]
+        [Route("{locationId}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Location> PatchProduct([FromRoute] string locationId, [FromBody] LocationPatch newLocation)
+        {
+            try
+            {
+                var locationList = _dao.Locations as IQueryable<Location>;
+                var location = locationList.First(p => p.LocationId.Equals(locationId));
+
+                location.LocationName = newLocation.LocationName ?? location.LocationName;
+                location.LocationCity = newLocation.LocationCity ?? location.LocationCity;
+                location.LocationState = newLocation.LocationState ?? location.LocationState;
+                string temp = location.LocationCapacity.ToString();
+                temp = newLocation.LocationCapacity.ToString() ?? location.LocationCapacity.ToString();
+                location.LocationCapacity = int.Parse(temp);
+                location.LocationOpenTime = newLocation.LocationOpenTime ?? location.LocationOpenTime;
+                location.LocationCloseTime = newLocation.LocationCloseTime ?? location.LocationOpenTime;
+                location.Reservations = newLocation.Reservations ?? location.Reservations; 
+
+                _dao.Locations.Update(location);
+                _dao.SaveChanges();
+
+                return new CreatedResult($"/locations/{location.LocationId.ToLower()}", location);
+            }
+            catch (Exception e)
+            {
+                // Typically an error log is produced here
+                return ValidationProblem(e.Message);
+            }
+        }
     }
 }
