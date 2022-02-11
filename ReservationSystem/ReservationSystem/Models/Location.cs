@@ -23,15 +23,16 @@ namespace ReservationSystem.Models
         [Display(Name = "locationState")]
         public string LocationState { get; set; }
         [Required]
-        [Range(0, 1)]
+        [Range(0, 1000)]
         [Display(Name = "locationCapacity")]
         public int LocationCapacity { get; set; }
+
         [Required]
         [Display(Name = "locationOpenTime")]
-        public DateTime LocationOpenTime { get; set; }
+        public string LocationOpenTime { get; set; }
         [Required]
         [Display(Name = "locationCloseTime")]
-        public DateTime LocationCloseTime { get; set; }
+        public string LocationCloseTime { get; set; }
 
         [Required]
         [Display(Name = "reservationList")]

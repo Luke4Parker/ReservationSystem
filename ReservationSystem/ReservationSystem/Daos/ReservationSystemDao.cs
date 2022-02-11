@@ -13,6 +13,7 @@ namespace ReservationSystem.Daos
         { }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Location> Locations { get; set; }
+        public DbSet<Brand> Brands { get; set; }
 
     }
 

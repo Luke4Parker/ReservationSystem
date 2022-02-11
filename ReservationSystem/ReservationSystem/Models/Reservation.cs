@@ -22,7 +22,7 @@ namespace ReservationSystem.Models
 
         [Required]
         [Display(Name = "length")]
-        public int ReservationLength { get; set; }
+        public TimeSpan ReservationLength { get; set; }
 
         [Required]
         [Display(Name = "partySize")]
