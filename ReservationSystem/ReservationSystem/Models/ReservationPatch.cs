@@ -19,7 +19,7 @@ namespace ReservationSystem.Models
         public string CustomerId { get; set; }
 
         [Display(Name = "length")]
-        public TimeSpan ReservationLength { get; set; }
+        public TimeSpan ReservationLength = new TimeSpan(0, 1, 0, 0);
 
         [Display(Name = "partySize")]
         public int PartySize { get; set; }

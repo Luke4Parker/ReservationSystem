@@ -109,8 +109,17 @@ namespace ReservationSystem.Controllers
             try
             {
                 var location = _dao.Locations.First(l => l.LocationId.Equals(locationId));
-                if(reservation.ReservationDateTime.Hour > DateTime.Parse(location.LocationOpenTime).Hour && reservation.ReservationDateTime.Hour < DateTime.Parse(location.LocationCloseTime).Hour)
+                if(reservation.ReservationDateTime.Hour >= DateTime.Parse(location.LocationOpenTime).Hour 
+                    && reservation.ReservationDateTime.Hour < DateTime.Parse(location.LocationCloseTime).Hour)
                 {
+                    foreach (Reservation r in location.Reservations)
+                    {
+                        if(!(reservation.ReservationDateTime > r.ReservationDateTime.Add(r.ReservationLength) 
+                            || reservation.ReservationDateTime < r.ReservationDateTime.Subtract(reservation.ReservationLength)))
+                        {
+                            return ValidationProblem($"This reservation conflicts with an existing reservation.");
+                        }
+                    }
                     location.Reservations.Add(reservation);
                 }
                 else
@@ -216,10 +225,10 @@ namespace ReservationSystem.Controllers
         }
 
         [HttpPatch]
-        [Route("{locationId}/{reservationId}")]
+        [Route("{locationId}/reservationId")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Location> PatchReservation([FromRoute] string locationId, [FromRoute] string reservationId, [FromBody] ReservationPatch newReservation)
+        public ActionResult<Location> PatchReservation([FromRoute] string locationId, [FromQuery] string reservationId, [FromBody] ReservationPatch newReservation)
         {
             try
             {
@@ -227,18 +236,29 @@ namespace ReservationSystem.Controllers
                 var location = locationList.First(p => p.LocationId.Equals(locationId));
                 var reservation = location.Reservations.First(r => r.ReservationId.Equals(reservationId));
                 
-                string temp = newReservation.ReservationLength.ToString() ?? reservation.ReservationLength.ToString();
-                reservation.ReservationLength = TimeSpan.Parse(temp);
+                //string temp = newReservation.ReservationLength.ToString() ?? reservation.ReservationLength.ToString();
+                //reservation.ReservationLength = TimeSpan.Parse(temp);
 
-                temp = newReservation.PartySize.ToString() ?? reservation.PartySize.ToString();
+                string temp = newReservation.PartySize.ToString() ?? reservation.PartySize.ToString();
                 reservation.PartySize = int.Parse(temp);
 
                 temp = newReservation.ReservationDateTime.ToString() ?? reservation.ReservationDateTime.ToString();
                 reservation.ReservationDateTime = DateTime.Parse(temp);
 
 
-                if (reservation.ReservationDateTime.Hour > DateTime.Parse(location.LocationOpenTime).Hour && reservation.ReservationDateTime.Hour < DateTime.Parse(location.LocationCloseTime).Hour)
+                if (reservation.ReservationDateTime.Hour >= DateTime.Parse(location.LocationOpenTime).Hour 
+                    && reservation.ReservationDateTime.Hour < DateTime.Parse(location.LocationCloseTime).Hour)
                 {
+
+                    //********DOESN'T WORK! There's always a conflict.***********
+                    //foreach (Reservation r in location.Reservations)
+                    //{
+                    //    if (!(reservation.ReservationDateTime > r.ReservationDateTime.Add(r.ReservationLength)
+                    //        || reservation.ReservationDateTime < r.ReservationDateTime.Subtract(reservation.ReservationLength)))
+                    //    {
+                    //        return ValidationProblem($"This reservation conflicts with an existing reservation.");
+                    //    }
+                    //}
                     location.Reservations.Remove(location.Reservations.First(r => r.ReservationId.Equals(reservationId)));
                     location.Reservations.Add(reservation);
                 }
@@ -247,8 +267,6 @@ namespace ReservationSystem.Controllers
                     return ValidationProblem($"Adding Reservation Outside Operating Hours. Operating Hours are {location.LocationOpenTime} - {location.LocationCloseTime}");
                 }
 
-
-                
                 _dao.Locations.Update(location);
                 _dao.SaveChanges();
 

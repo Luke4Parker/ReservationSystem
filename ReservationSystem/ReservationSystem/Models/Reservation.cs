@@ -21,15 +21,15 @@ namespace ReservationSystem.Models
         public string CustomerId { get; set; }
 
         [Required]
-        [Display(Name = "length")]
-        public TimeSpan ReservationLength { get; set; }
+        [Display(Name = "reservationLength")]
+        public TimeSpan ReservationLength = new TimeSpan(0, 1, 0, 0);
 
         [Required]
         [Display(Name = "partySize")]
         public int PartySize { get; set; }
 
         [Required]
-        [Display(Name = "ReservationDateTime")]
+        [Display(Name = "reservationDateTime")]
         public DateTime ReservationDateTime { get; set; }
 
     }
