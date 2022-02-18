@@ -109,7 +109,14 @@ namespace ReservationSystem.Controllers
             try
             {
                 var location = _dao.Locations.First(l => l.LocationId.Equals(locationId));
-                location.Reservations.Add(reservation);
+                if(reservation.ReservationDateTime.Hour > DateTime.Parse(location.LocationOpenTime).Hour && reservation.ReservationDateTime.Hour < DateTime.Parse(location.LocationCloseTime).Hour)
+                {
+                    location.Reservations.Add(reservation);
+                }
+                else
+                {
+                    return ValidationProblem($"Adding Reservation Outside Operating Hours. Operating Hours are {location.LocationOpenTime} - {location.LocationCloseTime}");
+                }
 
                 _dao.SaveChanges();
 
@@ -229,8 +236,19 @@ namespace ReservationSystem.Controllers
                 temp = newReservation.ReservationDateTime.ToString() ?? reservation.ReservationDateTime.ToString();
                 reservation.ReservationDateTime = DateTime.Parse(temp);
 
-                location.Reservations.Remove(location.Reservations.First(r => r.ReservationId.Equals(reservationId)));
-                location.Reservations.Add(reservation);
+
+                if (reservation.ReservationDateTime.Hour > DateTime.Parse(location.LocationOpenTime).Hour && reservation.ReservationDateTime.Hour < DateTime.Parse(location.LocationCloseTime).Hour)
+                {
+                    location.Reservations.Remove(location.Reservations.First(r => r.ReservationId.Equals(reservationId)));
+                    location.Reservations.Add(reservation);
+                }
+                else
+                {
+                    return ValidationProblem($"Adding Reservation Outside Operating Hours. Operating Hours are {location.LocationOpenTime} - {location.LocationCloseTime}");
+                }
+
+
+                
                 _dao.Locations.Update(location);
                 _dao.SaveChanges();
 
