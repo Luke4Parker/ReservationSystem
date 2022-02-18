@@ -9,7 +9,7 @@ using System.Threading.Tasks;
     {
         public class LocationPatch
         {
-            
+            [Key]
             [Display(Name = "locationId")]
             public string LocationId { get; set; }
             
@@ -26,8 +26,7 @@ using System.Threading.Tasks;
             [Range(0, 1000)]
             [Display(Name = "locationCapacity")]
             public int LocationCapacity { get; set; }
-
-            
+                    
             [Display(Name = "locationOpenTime")]
             public string LocationOpenTime { get; set; }
             

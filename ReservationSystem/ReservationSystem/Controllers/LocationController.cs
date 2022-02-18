@@ -119,7 +119,7 @@ namespace ReservationSystem.Controllers
             {
                 return ValidationProblem(e.Message);
             }
-            
+
         }
 
         //END POST REQUESTS
@@ -160,7 +160,7 @@ namespace ReservationSystem.Controllers
                 var locationList = _dao.Locations as IQueryable<Location>;
                 var location = locationList.First(l => l.LocationId.Equals(locationId));
                 location.Reservations.Remove(location.Reservations.First(r => r.ReservationId.Equals(reservationId)));
-                
+
                 _dao.SaveChanges();
 
                 return new CreatedResult($"/locations/{location.LocationId.ToLower()}", location);
@@ -208,38 +208,40 @@ namespace ReservationSystem.Controllers
             }
         }
 
-        //[HttpPatch]
-        //[Route("{locationId}/reservations")]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public ActionResult<Location> PatchReservation([FromRoute] string locationId, [FromBody] LocationPatch newLocation)
-        //{
-        //    try
-        //    {
-        //        var locationList = _dao.Locations as IQueryable<Location>;
-        //        var location = locationList.First(p => p.LocationId.Equals(locationId));
+        [HttpPatch]
+        [Route("{locationId}/{reservationId}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Location> PatchReservation([FromRoute] string locationId, [FromRoute] string reservationId, [FromBody] ReservationPatch newReservation)
+        {
+            try
+            {
+                var locationList = _dao.Locations as IQueryable<Location>;
+                var location = locationList.First(p => p.LocationId.Equals(locationId));
+                var reservation = location.Reservations.First(r => r.ReservationId.Equals(reservationId));
+                
+                string temp = newReservation.ReservationLength.ToString() ?? reservation.ReservationLength.ToString();
+                reservation.ReservationLength = TimeSpan.Parse(temp);
 
-        //        location.LocationName = newLocation.LocationName ?? location.LocationName;
-        //        location.LocationCity = newLocation.LocationCity ?? location.LocationCity;
-        //        location.LocationState = newLocation.LocationState ?? location.LocationState;
-        //        string temp = location.LocationCapacity.ToString();
-        //        temp = newLocation.LocationCapacity.ToString() ?? location.LocationCapacity.ToString();
-        //        location.LocationCapacity = int.Parse(temp);
-        //        location.LocationOpenTime = newLocation.LocationOpenTime ?? location.LocationOpenTime;
-        //        location.LocationCloseTime = newLocation.LocationCloseTime ?? location.LocationOpenTime;
-        //        location.Reservations = newLocation.Reservations ?? location.Reservations;
+                temp = newReservation.PartySize.ToString() ?? reservation.PartySize.ToString();
+                reservation.PartySize = int.Parse(temp);
 
-        //        _dao.Locations.Update(location);
-        //        _dao.SaveChanges();
+                temp = newReservation.ReservationDateTime.ToString() ?? reservation.ReservationDateTime.ToString();
+                reservation.ReservationDateTime = DateTime.Parse(temp);
 
-        //        return new CreatedResult($"/locations/{location.LocationId.ToLower()}", location);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        // Typically an error log is produced here
-        //        return ValidationProblem(e.Message);
-        //    }
-        //}
+                location.Reservations.Remove(location.Reservations.First(r => r.ReservationId.Equals(reservationId)));
+                location.Reservations.Add(reservation);
+                _dao.Locations.Update(location);
+                _dao.SaveChanges();
+
+                return new CreatedResult($"/locations/{location.LocationId.ToLower()}", location);
+            }
+            catch (Exception e)
+            {
+                // Typically an error log is produced here
+                return ValidationProblem(e.Message);
+            }
+        }
         //END PATCH REQUESTS
         //********************
     }
