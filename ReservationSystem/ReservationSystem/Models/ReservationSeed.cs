@@ -28,8 +28,17 @@ namespace ReservationSystem.Models
             reservation1.PartySize = 1;
             reservation1.ReservationDateTime = new DateTime(2022, 2, 14, 17, 30, 00);
 
+            Reservation reservation2 = new Reservation();
+            reservation2.ReservationId = "2";
+            reservation2.CustomerId = "1";
+            reservation2.LocationId = "1";
+            reservation2.ReservationLength = new TimeSpan(0, 1, 0, 0);
+            reservation2.PartySize = 1;
+            reservation2.ReservationDateTime = new DateTime(2023, 2, 14, 17, 30, 00);
+
             List<Reservation> reservations = new List<Reservation>();
             reservations.Add(reservation1);
+            reservations.Add(reservation2);
 
 
             Location location1 = new Location();

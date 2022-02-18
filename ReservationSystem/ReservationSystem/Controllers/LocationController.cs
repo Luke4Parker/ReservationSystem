@@ -24,6 +24,8 @@ namespace ReservationSystem.Controllers
             ReservationSeed.InitData(dao);
         }
 
+        //Get requests - This section contains Get Requests for location and reservations
+        //**************************
         [HttpGet]
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -54,6 +56,31 @@ namespace ReservationSystem.Controllers
         //    return Ok(result.OrderBy(l => l.LocationId));
         //}
 
+
+        [HttpGet]
+        [Route("{locationId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public ActionResult<IQueryable<Reservation>> GetReservationById([FromRoute] string locationId, [FromQuery] string reservationId)
+        public ActionResult GetReservationById([FromRoute] string locationId)
+        {
+            var result = _dao.Locations as IQueryable<Location>;
+            var reservations = new List<Reservation>();
+
+            if (!string.IsNullOrEmpty(locationId))
+            {
+                var location = result.First(l => l.LocationId.Equals(locationId));
+                reservations = location.Reservations;
+            }
+
+            return Ok(reservations.OrderBy(r => r.ReservationId));
+        }
+        //END GET REQUESTS
+        //*********************
+
+
+        //START POST REQUESTS
+        //*********************
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -73,6 +100,34 @@ namespace ReservationSystem.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("{locationId}")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult PostReservation([FromRoute] string locationId, [FromBody] Reservation reservation)
+        {
+            try
+            {
+                var location = _dao.Locations.First(l => l.LocationId.Equals(locationId));
+                location.Reservations.Add(reservation);
+
+                _dao.SaveChanges();
+
+                return new CreatedResult($"/locations/{location.LocationId.ToLower()}", location);
+            }
+            catch (Exception e)
+            {
+                return ValidationProblem(e.Message);
+            }
+            
+        }
+
+        //END POST REQUESTS
+        //*********************
+
+
+        //START DELETE REQUESTS
+        //*********************
         [HttpDelete]
         [Route("{locationId}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -94,11 +149,37 @@ namespace ReservationSystem.Controllers
             }
         }
 
+        [HttpDelete]
+        [Route("{locationId}/reservations")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Location> DeleteReservation([FromRoute] string locationId, [FromQuery] string reservationId)
+        {
+            try
+            {
+                var locationList = _dao.Locations as IQueryable<Location>;
+                var location = locationList.First(l => l.LocationId.Equals(locationId));
+                location.Reservations.Remove(location.Reservations.First(r => r.ReservationId.Equals(reservationId)));
+                
+                _dao.SaveChanges();
+
+                return new CreatedResult($"/locations/{location.LocationId.ToLower()}", location);
+            }
+            catch (Exception e)
+            {
+                return ValidationProblem(e.Message);
+            }
+        }
+        //END DELETE REQUESTS
+        //**********************
+
+        //START PATCH REQUESTS
+        //**********************
         [HttpPatch]
         [Route("{locationId}")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public ActionResult<Location> PatchProduct([FromRoute] string locationId, [FromBody] LocationPatch newLocation)
+        public ActionResult<Location> PatchLocation([FromRoute] string locationId, [FromBody] LocationPatch newLocation)
         {
             try
             {
@@ -113,7 +194,7 @@ namespace ReservationSystem.Controllers
                 location.LocationCapacity = int.Parse(temp);
                 location.LocationOpenTime = newLocation.LocationOpenTime ?? location.LocationOpenTime;
                 location.LocationCloseTime = newLocation.LocationCloseTime ?? location.LocationOpenTime;
-                location.Reservations = newLocation.Reservations ?? location.Reservations; 
+                //location.Reservations = newLocation.Reservations ?? location.Reservations; 
 
                 _dao.Locations.Update(location);
                 _dao.SaveChanges();
@@ -126,5 +207,40 @@ namespace ReservationSystem.Controllers
                 return ValidationProblem(e.Message);
             }
         }
+
+        //[HttpPatch]
+        //[Route("{locationId}/reservations")]
+        //[ProducesResponseType(StatusCodes.Status201Created)]
+        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        //public ActionResult<Location> PatchReservation([FromRoute] string locationId, [FromBody] LocationPatch newLocation)
+        //{
+        //    try
+        //    {
+        //        var locationList = _dao.Locations as IQueryable<Location>;
+        //        var location = locationList.First(p => p.LocationId.Equals(locationId));
+
+        //        location.LocationName = newLocation.LocationName ?? location.LocationName;
+        //        location.LocationCity = newLocation.LocationCity ?? location.LocationCity;
+        //        location.LocationState = newLocation.LocationState ?? location.LocationState;
+        //        string temp = location.LocationCapacity.ToString();
+        //        temp = newLocation.LocationCapacity.ToString() ?? location.LocationCapacity.ToString();
+        //        location.LocationCapacity = int.Parse(temp);
+        //        location.LocationOpenTime = newLocation.LocationOpenTime ?? location.LocationOpenTime;
+        //        location.LocationCloseTime = newLocation.LocationCloseTime ?? location.LocationOpenTime;
+        //        location.Reservations = newLocation.Reservations ?? location.Reservations;
+
+        //        _dao.Locations.Update(location);
+        //        _dao.SaveChanges();
+
+        //        return new CreatedResult($"/locations/{location.LocationId.ToLower()}", location);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        // Typically an error log is produced here
+        //        return ValidationProblem(e.Message);
+        //    }
+        //}
+        //END PATCH REQUESTS
+        //********************
     }
 }
