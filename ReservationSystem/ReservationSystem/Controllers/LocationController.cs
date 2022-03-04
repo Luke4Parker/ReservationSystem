@@ -250,15 +250,21 @@ namespace ReservationSystem.Controllers
                     && reservation.ReservationDateTime.Hour < DateTime.Parse(location.LocationCloseTime).Hour)
                 {
 
-                    //********DOESN'T WORK! There's always a conflict.***********
-                    //foreach (Reservation r in location.Reservations)
-                    //{
-                    //    if (!(reservation.ReservationDateTime > r.ReservationDateTime.Add(r.ReservationLength)
-                    //        || reservation.ReservationDateTime < r.ReservationDateTime.Subtract(reservation.ReservationLength)))
-                    //    {
-                    //        return ValidationProblem($"This reservation conflicts with an existing reservation.");
-                    //    }
-                    //}
+                    //reservation is the new reservation. Need to name this better when refactoring
+
+                    foreach (Reservation r in location.Reservations)
+                    {
+                        if (reservation.ReservationDateTime < r.ReservationDateTime.Add(r.ReservationLength) 
+                            && reservation.ReservationDateTime > r.ReservationDateTime)
+                        {
+                            return ValidationProblem($"This reservation conflicts with an existing reservation.");
+                        }
+                        else if (reservation.ReservationDateTime > r.ReservationDateTime.Subtract(reservation.ReservationLength)
+                            && reservation.ReservationDateTime < r.ReservationDateTime)
+                        {
+                            return ValidationProblem($"This reservation conflicts with an existing reservation.");
+                        }
+                    }
                     location.Reservations.Remove(location.Reservations.First(r => r.ReservationId.Equals(reservationId)));
                     location.Reservations.Add(reservation);
                 }
