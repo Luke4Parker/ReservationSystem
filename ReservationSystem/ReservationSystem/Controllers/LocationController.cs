@@ -114,8 +114,13 @@ namespace ReservationSystem.Controllers
                 {
                     foreach (Reservation r in location.Reservations)
                     {
-                        if(!(reservation.ReservationDateTime > r.ReservationDateTime.Add(r.ReservationLength) 
-                            || reservation.ReservationDateTime < r.ReservationDateTime.Subtract(reservation.ReservationLength)))
+                        if (reservation.ReservationDateTime < r.ReservationDateTime.Add(r.ReservationLength)
+                             && reservation.ReservationDateTime > r.ReservationDateTime)
+                        {
+                            return ValidationProblem($"This reservation conflicts with an existing reservation.");
+                        }
+                        else if (reservation.ReservationDateTime > r.ReservationDateTime.Subtract(reservation.ReservationLength)
+                            && reservation.ReservationDateTime < r.ReservationDateTime)
                         {
                             return ValidationProblem($"This reservation conflicts with an existing reservation.");
                         }

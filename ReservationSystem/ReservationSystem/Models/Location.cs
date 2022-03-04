@@ -26,7 +26,6 @@ namespace ReservationSystem.Models
         [Range(0, 1000)]
         [Display(Name = "locationCapacity")]
         public int LocationCapacity { get; set; }
-
         [Required]
         [Display(Name = "locationOpenTime")]
         public string LocationOpenTime { get; set; }
@@ -37,6 +36,7 @@ namespace ReservationSystem.Models
         [Required]
         [Display(Name = "reservationList")]
         public virtual List<Reservation> Reservations { get; set; }
+        
 
     }
 }
