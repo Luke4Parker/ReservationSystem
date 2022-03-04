@@ -106,32 +106,44 @@ namespace ReservationSystem.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult PostReservation([FromRoute] string locationId, [FromBody] Reservation reservation)
         {
+            int capacityCounter = 0;
             try
             {
                 var location = _dao.Locations.First(l => l.LocationId.Equals(locationId));
                 if(reservation.ReservationDateTime.Hour >= DateTime.Parse(location.LocationOpenTime).Hour 
                     && reservation.ReservationDateTime.Hour < DateTime.Parse(location.LocationCloseTime).Hour)
                 {
+                    
                     foreach (Reservation r in location.Reservations)
                     {
-                        if (reservation.ReservationDateTime < r.ReservationDateTime.Add(r.ReservationLength)
-                             && reservation.ReservationDateTime > r.ReservationDateTime)
+                        if (reservation.ReservationDateTime <= r.ReservationDateTime.Add(r.ReservationLength)
+                             && reservation.ReservationDateTime >= r.ReservationDateTime)
                         {
-                            return ValidationProblem($"This reservation conflicts with an existing reservation.");
+                            capacityCounter++;
                         }
-                        else if (reservation.ReservationDateTime > r.ReservationDateTime.Subtract(reservation.ReservationLength)
-                            && reservation.ReservationDateTime < r.ReservationDateTime)
+                        else if (reservation.ReservationDateTime >= r.ReservationDateTime.Subtract(reservation.ReservationLength)
+                            && reservation.ReservationDateTime <= r.ReservationDateTime)
                         {
-                            return ValidationProblem($"This reservation conflicts with an existing reservation.");
+                            capacityCounter++;
                         }
                     }
-                    location.Reservations.Add(reservation);
+
+                    if (capacityCounter >= location.LocationCapacity)
+                    {
+                        return ValidationProblem($"No tables available at this time.");
+                    }
+                    else
+                    {
+                        location.Reservations.Add(reservation);
+                    }
+                    
+
                 }
                 else
                 {
                     return ValidationProblem($"Adding Reservation Outside Operating Hours. Operating Hours are {location.LocationOpenTime} - {location.LocationCloseTime}");
                 }
-
+                _dao.Locations.Update(location);
                 _dao.SaveChanges();
 
                 return new CreatedResult($"/locations/{location.LocationId.ToLower()}", location);
@@ -235,6 +247,7 @@ namespace ReservationSystem.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<Location> PatchReservation([FromRoute] string locationId, [FromQuery] string reservationId, [FromBody] ReservationPatch newReservation)
         {
+            int capacityCounter = 0;
             try
             {
                 var locationList = _dao.Locations as IQueryable<Location>;
@@ -259,19 +272,27 @@ namespace ReservationSystem.Controllers
 
                     foreach (Reservation r in location.Reservations)
                     {
-                        if (reservation.ReservationDateTime < r.ReservationDateTime.Add(r.ReservationLength) 
-                            && reservation.ReservationDateTime > r.ReservationDateTime)
+                        if (reservation.ReservationDateTime <= r.ReservationDateTime.Add(r.ReservationLength)
+                             && reservation.ReservationDateTime >= r.ReservationDateTime)
                         {
-                            return ValidationProblem($"This reservation conflicts with an existing reservation.");
+                            capacityCounter++;
                         }
-                        else if (reservation.ReservationDateTime > r.ReservationDateTime.Subtract(reservation.ReservationLength)
-                            && reservation.ReservationDateTime < r.ReservationDateTime)
+                        else if (reservation.ReservationDateTime >= r.ReservationDateTime.Subtract(reservation.ReservationLength)
+                            && reservation.ReservationDateTime <= r.ReservationDateTime)
                         {
-                            return ValidationProblem($"This reservation conflicts with an existing reservation.");
+                            capacityCounter++;
                         }
                     }
-                    location.Reservations.Remove(location.Reservations.First(r => r.ReservationId.Equals(reservationId)));
-                    location.Reservations.Add(reservation);
+
+                    if (capacityCounter >= location.LocationCapacity)
+                    {
+                        return ValidationProblem($"No tables available at this time.");
+                    }
+                    else
+                    {
+                        location.Reservations.Remove(location.Reservations.First(r => r.ReservationId.Equals(reservationId)));
+                        location.Reservations.Add(reservation);
+                    }
                 }
                 else
                 {
