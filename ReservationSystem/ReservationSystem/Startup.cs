@@ -28,8 +28,10 @@ namespace ReservationSystem
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<DapperContext>();
+            services.AddScoped<ReservationSystemDao>();
             services.AddControllers();
-            services.AddDbContext<ReservationSystemDao>(opt => opt.UseLazyLoadingProxies().UseInMemoryDatabase("ReservationSystem"));
+            
             services.AddApiVersioning(opt => opt.ReportApiVersions = true);
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo
             {

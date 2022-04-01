@@ -19,9 +19,6 @@ namespace ReservationSystem.Controllers
         public LocationController(ReservationSystemDao dao)
         {
             _dao = dao;
-            if (_dao.Locations.Any()) return;
-
-            ReservationSeed.InitData(dao);
         }
 
         //Get requests - This section contains Get Requests for location and reservations

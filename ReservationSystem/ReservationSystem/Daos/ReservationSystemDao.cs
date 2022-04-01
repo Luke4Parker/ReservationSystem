@@ -4,16 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using ReservationSystem.Models;
 using Microsoft.EntityFrameworkCore;
+using Dapper;
 
 namespace ReservationSystem.Daos
 {
-    public class ReservationSystemDao : DbContext
+    public class ReservationSystemDao
     {
-        public ReservationSystemDao(DbContextOptions<ReservationSystemDao> options) : base(options)
-        { }
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Location> Locations { get; set; }
-        public DbSet<Brand> Brands { get; set; }
+        private readonly DapperContext _context; 
+        public ReservationSystemDao(DapperContext context)
+        {
+            _context = context;
+        }
+        
 
     }
 
