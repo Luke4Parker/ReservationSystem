@@ -11,32 +11,28 @@ namespace ReservationSystem.Models
         [Key]
         [Required]
         [Display(Name = "locationId")]
-        public string LocationId { get; set; }
+        public string Id { get; set; }
         [Required]
         [Display(Name = "locationName")]
-        public string LocationName { get; set; }
-        
+        public string Name { get; set; }
         [Required]
         [Display(Name = "locationCity")]
-        public string LocationCity { get; set; }
+        public string City { get; set; }
         [Required]
         [Display(Name = "locationState")]
-        public string LocationState { get; set; }
+        public string State { get; set; }
         [Required]
         [Range(0, 1000)]
         [Display(Name = "locationCapacity")]
-        public int LocationCapacity { get; set; }
+        public int Capacity { get; set; }
         [Required]
         [Display(Name = "locationOpenTime")]
-        public string LocationOpenTime { get; set; }
+        public object OpenTime { get; set; } 
         [Required]
         [Display(Name = "locationCloseTime")]
-        public string LocationCloseTime { get; set; }
-
+        public object CloseTime { get; set; }
         [Required]
         [Display(Name = "reservationList")]
         public virtual List<Reservation> Reservations { get; set; }
-        
-
     }
 }

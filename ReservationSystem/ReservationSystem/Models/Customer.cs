@@ -11,19 +11,19 @@ namespace ReservationSystem.Models
         [Key]
         [Required]
         [Display(Name="customerId")]
-        public string CustomerId { get; set; }
+        public string Id { get; set; }
         [Required]
         [Display(Name="customerFirstName")]
-        public string CustomerFirstName { get; set; }
+        public string FirstName { get; set; }
         [Required]
         [Display(Name = "customerLastName")]
-        public string CustomerLastName { get; set; }
+        public string LastName { get; set; }
         [Required]
         [Display(Name = "customerPhone")]
-        public string CustomerPhone { get; set; }
+        public string Phone { get; set; }
         [Required]
         [Display(Name = "customerEmail")]
-        public string CustomerEmail { get; set; }
+        public string Email { get; set; }
 
     }
 }
