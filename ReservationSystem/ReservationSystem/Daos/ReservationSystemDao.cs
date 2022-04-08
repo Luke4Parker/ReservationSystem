@@ -16,6 +16,19 @@ namespace ReservationSystem.Daos
             _context = context;
         }
         
+        //************************************************************
+        //Begin Location Sql Requests
+        public async Task CreateLocation(Location newLocation)
+        {
+            var query = $"INSERT INTO Location (Name, City, State, Capacity, OpenTime, CloseTime, BrandId) " +
+                $"VALUES ('{newLocation.Name}', '{newLocation.City}', '{newLocation.State}', {newLocation.Capacity}," +
+                $" '{newLocation.OpenTime}', '{newLocation.CloseTime}', {newLocation.BrandId})";
+            using (var connection = _context.CreateConnection())
+            {
+                var locations = await connection.ExecuteAsync(query);
+            }
+        }
+
         public async Task<IEnumerable<Location>> GetLocations()
         {
             var query = "SELECT * FROM Location";
@@ -26,6 +39,29 @@ namespace ReservationSystem.Daos
                 return locations.ToList();
             }
         }
+
+        public async Task<Location> GetLocationById(int id)
+        {
+            var query = $"SELECT * FROM Location WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                var location = await connection.QueryFirstOrDefaultAsync<Location>(query);
+
+                return location;
+            }
+        }
+
+        public async Task DeleteLocation(int id)
+        {
+            var query = $"DELETE FROM Location WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);                
+            }
+        }
+
+        //***************************************************
+        //Begin Customer SQL requests
 
         public async Task<IEnumerable<Customer>> GetCustomers()
         {

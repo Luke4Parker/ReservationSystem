@@ -40,6 +40,45 @@ namespace ReservationSystem.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+        [HttpPost]
+        [Route("")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CreateLocation([FromBody] Location newLocation)
+        {
+            try
+            {
+                await _dao.CreateLocation(newLocation);
+                return StatusCode(204);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteLocation([FromRoute] int id)
+        {
+            try
+            {
+                var location = await _dao.GetLocationById(id);
+                if (location == null)
+                {
+                    return StatusCode(404);
+                }
+                await _dao.DeleteLocation(id);
+                return StatusCode(200);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
         //public ActionResult<IQueryable<Location>> GetLocations([FromQuery] string locationName)
         //{
         //    var result = _dao.Locations as IQueryable<Location>;
@@ -123,7 +162,7 @@ namespace ReservationSystem.Controllers
         //        if(reservation.ReservationDateTime.Hour >= DateTime.Parse(location.LocationOpenTime).Hour 
         //            && reservation.ReservationDateTime.Hour < DateTime.Parse(location.LocationCloseTime).Hour)
         //        {
-                    
+
         //            foreach (Reservation r in location.Reservations)
         //            {
         //                if (reservation.ReservationDateTime <= r.ReservationDateTime.Add(r.ReservationLength)
@@ -146,7 +185,7 @@ namespace ReservationSystem.Controllers
         //            {
         //                location.Reservations.Add(reservation);
         //            }
-                    
+
 
         //        }
         //        else
@@ -263,7 +302,7 @@ namespace ReservationSystem.Controllers
         //        var locationList = _dao.Locations as IQueryable<Location>;
         //        var location = locationList.First(p => p.LocationId.Equals(locationId));
         //        var reservation = location.Reservations.First(r => r.ReservationId.Equals(reservationId));
-                
+
         //        //string temp = newReservation.ReservationLength.ToString() ?? reservation.ReservationLength.ToString();
         //        //reservation.ReservationLength = TimeSpan.Parse(temp);
 

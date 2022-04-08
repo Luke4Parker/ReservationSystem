@@ -32,7 +32,8 @@ namespace ReservationSystem.Models
         [Display(Name = "locationCloseTime")]
         public object CloseTime { get; set; }
         [Required]
-        [Display(Name = "reservationList")]
-        public virtual List<Reservation> Reservations { get; set; }
+        [Display(Name = "brandId")]
+        public int BrandId { get; set; }
+
     }
 }
