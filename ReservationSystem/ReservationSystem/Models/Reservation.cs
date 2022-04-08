@@ -10,7 +10,7 @@ namespace ReservationSystem.Models
     {
         [Required]
         [Display(Name = "reservationId")]
-        public string ReservationId { get; set; }
+        public string Id { get; set; }
 
         [Required]
         [Display(Name = "locationId")]
@@ -22,7 +22,7 @@ namespace ReservationSystem.Models
 
         [Required]
         [Display(Name = "reservationLength")]
-        public TimeSpan ReservationLength = new TimeSpan(0, 1, 0, 0);
+        public decimal Length;
 
         [Required]
         [Display(Name = "partySize")]
@@ -30,7 +30,7 @@ namespace ReservationSystem.Models
 
         [Required]
         [Display(Name = "reservationDateTime")]
-        public DateTime ReservationDateTime { get; set; }
+        public object ReservationTime { get; set; }
 
     }
 }

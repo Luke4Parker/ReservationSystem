@@ -48,6 +48,6 @@ LocationId INT FOREIGN KEY REFERENCES [Location](Id) ON UPDATE CASCADE ON DELETE
 
 --DROP TABLE Reservation;
 
-
+INSERT INTO Reservation([Length], PartySize, ReservationTime, CustomerId, LocationId) VALUES (1, 1, '2022-02-14', 1, 1);
 
 SELECT * FROM Reservation;

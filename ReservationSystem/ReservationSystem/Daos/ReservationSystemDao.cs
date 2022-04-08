@@ -37,6 +37,17 @@ namespace ReservationSystem.Daos
                 return customers.ToList();
             }
         }
+
+        public async Task<IEnumerable<Reservation>> GetReservations()
+        {
+            var query = "SELECT * FROM Reservation";
+            using (var connection = _context.CreateConnection())
+            {
+                var reservations = await connection.QueryAsync<Reservation>(query);
+
+                return reservations.ToList();
+            }
+        }
     }
 
     
