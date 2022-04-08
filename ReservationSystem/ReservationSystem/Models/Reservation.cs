@@ -22,7 +22,7 @@ namespace ReservationSystem.Models
 
         [Required]
         [Display(Name = "reservationLength")]
-        public decimal Length;
+        public float Length { get; set; }
 
         [Required]
         [Display(Name = "partySize")]

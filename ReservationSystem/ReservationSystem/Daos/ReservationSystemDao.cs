@@ -20,7 +20,7 @@ namespace ReservationSystem.Daos
         //Begin Location Sql Requests
         public async Task CreateLocation(Location newLocation)
         {
-            var query = $"INSERT INTO Location (Name, City, State, Capacity, OpenTime, CloseTime, BrandId) " +
+            var query = $"INSERT INTO Location ([Name], City, [State], Capacity, OpenTime, CloseTime, BrandId) " +
                 $"VALUES ('{newLocation.Name}', '{newLocation.City}', '{newLocation.State}', {newLocation.Capacity}," +
                 $" '{newLocation.OpenTime}', '{newLocation.CloseTime}', {newLocation.BrandId})";
             using (var connection = _context.CreateConnection())
@@ -62,7 +62,7 @@ namespace ReservationSystem.Daos
 
         public async Task UpdateLocation(Location locationUpdates, int id)
         {
-            var query = $"UPDATE Location SET Name = '{locationUpdates.Name}', City = '{locationUpdates.City}', State = '{locationUpdates.State}', " +
+            var query = $"UPDATE Location SET [Name] = '{locationUpdates.Name}', City = '{locationUpdates.City}', [State] = '{locationUpdates.State}', " +
                 $"Capacity = {locationUpdates.Capacity}, OpenTime = '{locationUpdates.OpenTime}', " +
                 $"CloseTime = '{locationUpdates.CloseTime}', BrandId = {locationUpdates.BrandId} WHERE Id = {id}";
             using (var connection = _context.CreateConnection())
@@ -127,6 +127,7 @@ namespace ReservationSystem.Daos
 
         //End Customer SQL Requests
         //******************************************************
+        //Begin Reservation SQL Requests
 
         public async Task<IEnumerable<Reservation>> GetReservations()
         {
@@ -136,6 +137,68 @@ namespace ReservationSystem.Daos
                 var reservations = await connection.QueryAsync<Reservation>(query);
 
                 return reservations.ToList();
+            }
+        }
+
+        public async Task CreateReservation(Reservation newReservation)
+        {
+            var query = $"INSERT INTO Reservation ([Length], PartySize, ReservationTime, CustomerId, LocationId) " +
+                $"VALUES ('{newReservation.Length}', '{newReservation.PartySize}', '{newReservation.ReservationTime}', {newReservation.CustomerId}, {newReservation.LocationId})";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
+            }
+        }
+
+        public async Task<Reservation> GetReservationById(int id)
+        {
+            var query = $"SELECT * FROM Reservation WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                var reservation = await connection.QueryFirstOrDefaultAsync<Reservation>(query);
+
+                return reservation;
+            }
+        }
+
+        public async Task<IEnumerable<Reservation>> GetReservationByCustomerId(int id)
+        {
+            var query = $"SELECT * FROM Reservation WHERE CustomerId = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                var reservation = await connection.QueryAsync<Reservation>(query);
+
+                return reservation.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<Reservation>> GetReservationByLocationId(int id)
+        {
+            var query = $"SELECT * FROM Reservation WHERE LocationId = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                var reservation = await connection.QueryAsync<Reservation>(query);
+
+                return reservation.ToList();
+            }
+        }
+
+        public async Task DeleteReservation(int id)
+        {
+            var query = $"DELETE FROM Reservation WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
+            }
+        }
+
+        public async Task UpdateReservation(Reservation reservationUpdates, int id)
+        {
+            var query = $"UPDATE Reservation SET [Length] = {reservationUpdates.Length}, PartySize = {reservationUpdates.PartySize}, ReservationTime = '{reservationUpdates.ReservationTime}', " +
+                $"CustomerId = {reservationUpdates.CustomerId}, LocationId = {reservationUpdates.LocationId} WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
             }
         }
     }

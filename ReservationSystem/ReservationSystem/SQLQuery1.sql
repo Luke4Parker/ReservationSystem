@@ -38,8 +38,8 @@ INSERT INTO [Location] VALUES ('Hubert''s St. Johnsbury', 'St. Johnsbury', 'Verm
 SELECT * FROM [Location];
 
 CREATE TABLE Reservation(
-Id int IDENTITY(1,1) PRIMARY KEY,
-[Length] DECIMAL NOT NULL,
+Id INT IDENTITY(1,1) PRIMARY KEY,
+[Length] FLOAT NOT NULL,
 PartySize INT NOT NULL,
 ReservationTime DATETIME NOT NULL,
 CustomerId INT FOREIGN KEY REFERENCES Customer(Id) ON UPDATE CASCADE ON DELETE CASCADE,
