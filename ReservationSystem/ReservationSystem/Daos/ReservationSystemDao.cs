@@ -60,6 +60,17 @@ namespace ReservationSystem.Daos
             }
         }
 
+        public async Task UpdateLocation(Location locationUpdates, int id)
+        {
+            var query = $"UPDATE Location SET Name = '{locationUpdates.Name}', City = '{locationUpdates.City}', State = '{locationUpdates.State}', " +
+                $"Capacity = {locationUpdates.Capacity}, OpenTime = '{locationUpdates.OpenTime}', " +
+                $"CloseTime = '{locationUpdates.CloseTime}', BrandId = {locationUpdates.BrandId} WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
+            }
+        }
+
         //***************************************************
         //Begin Customer SQL requests
 
