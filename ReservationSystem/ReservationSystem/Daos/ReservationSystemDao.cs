@@ -25,7 +25,7 @@ namespace ReservationSystem.Daos
                 $" '{newLocation.OpenTime}', '{newLocation.CloseTime}', {newLocation.BrandId})";
             using (var connection = _context.CreateConnection())
             {
-                var locations = await connection.ExecuteAsync(query);
+                await connection.ExecuteAsync(query);
             }
         }
 
@@ -84,6 +84,49 @@ namespace ReservationSystem.Daos
                 return customers.ToList();
             }
         }
+
+        public async Task CreateCustomer(Customer newCustomer)
+        {
+            var query = $"INSERT INTO Customer (FirstName, LastName, Phone, Email) " +
+                $"VALUES ('{newCustomer.FirstName}', '{newCustomer.LastName}', '{newCustomer.Phone}', '{newCustomer.Email}')";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
+            }
+        }
+
+        public async Task<Customer> GetCustomerById(int id)
+        {
+            var query = $"SELECT * FROM Customer WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                var customer = await connection.QueryFirstOrDefaultAsync<Customer>(query);
+
+                return customer;
+            }
+        }
+
+        public async Task DeleteCustomer(int id)
+        {
+            var query = $"DELETE FROM Customer WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
+            }
+        }
+
+        public async Task UpdateCustomer(Customer customerUpdates, int id)
+        {
+            var query = $"UPDATE Customer SET FirstName = '{customerUpdates.FirstName}', LastName = '{customerUpdates.LastName}', Email = '{customerUpdates.Email}', " +
+                $"Phone = '{customerUpdates.Phone}' WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
+            }
+        }
+
+        //End Customer SQL Requests
+        //******************************************************
 
         public async Task<IEnumerable<Reservation>> GetReservations()
         {

@@ -38,84 +38,87 @@ namespace ReservationSystem.Controllers
             }
         }
 
-        //public ActionResult<IQueryable<Customer>> GetCustomers([FromQuery] string customerId)
-        //{
-        //    var result = _dao.Customers as IQueryable<Customer>;
+        [HttpGet]
+        [Route("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetCustomerById([FromRoute] int id)
+        {
+            try
+            {
+                var customer = await _dao.GetCustomerById(id);
+                if (customer == null)
+                {
+                    return StatusCode(404);
+                }
+                return Ok(customer);
+            }
+            catch (Exception e)
+            {
 
-        //    if (!string.IsNullOrEmpty(customerId))
-        //    {
-        //        result = result.Where(l => l.CustomerId.Contains(customerId, StringComparison.InvariantCultureIgnoreCase));
-        //    }
+                return StatusCode(500, e.Message);
+            }
+        }
 
-        //    return Ok(result.OrderBy(l => l.CustomerId));
-        //}
+        [HttpPost]
+        [Route("")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CreateCustomer([FromBody] Customer newCustomer)
+        {
+            try
+            {
+                await _dao.CreateCustomer(newCustomer);
+                return StatusCode(204);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
 
-        //[HttpPost]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpDelete]
+        [Route("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteCustomer([FromRoute] int id)
+        {
+            try
+            {
+                var customer = await _dao.GetCustomerById(id);
+                if (customer == null)
+                {
+                    return StatusCode(404);
+                }
+                await _dao.DeleteCustomer(id);
+                return StatusCode(200);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
 
-        //public ActionResult<Customer> PostCustomer([FromBody] Customer customer)
-        //{
-        //    try
-        //    {
-        //        _dao.Customers.Add(customer);
-        //        _dao.SaveChanges();
-
-        //        return new CreatedResult($"/customers/{customer.CustomerId.ToLower()}", customer);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return ValidationProblem(e.Message);
-        //    }
-        //}
-
-        //[HttpDelete]
-        //[Route("{customerId}")]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public ActionResult<Customer> DeleteCustomer([FromRoute] string customerId)
-        //{
-        //    try
-        //    {
-        //        var customerList = _dao.Customers as IQueryable<Customer>;
-        //        var customer = customerList.First(l => l.CustomerId.Equals(customerId));
-        //        _dao.Customers.Remove(customer);
-        //        _dao.SaveChanges();
-
-        //        return new CreatedResult($"/customers/{customer.CustomerId.ToLower()}", customer);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return ValidationProblem(e.Message);
-        //    }
-        //}
-
-        //[HttpPatch]
-        //[Route("{customerId}")]
-        //[ProducesResponseType(StatusCodes.Status201Created)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //public ActionResult<Customer> PatchCustomer([FromRoute] string customerId, [FromBody] CustomerPatch newCustomer)
-        //{
-        //    try
-        //    {
-        //        var customerList = _dao.Customers as IQueryable<Customer>;
-        //        var customer = customerList.First(p => p.CustomerId.Equals(customerId));
-
-        //        customer.CustomerFirstName = newCustomer.CustomerFirstName ?? customer.CustomerFirstName;
-        //        customer.CustomerLastName = newCustomer.CustomerLastName ?? customer.CustomerLastName;
-        //        customer.CustomerPhone = newCustomer.CustomerPhone ?? customer.CustomerPhone;
-        //        customer.CustomerEmail = newCustomer.CustomerEmail ?? customer.CustomerEmail;
-
-        //        _dao.Customers.Update(customer);
-        //        _dao.SaveChanges();
-
-        //        return new CreatedResult($"/customers/{customer.CustomerId.ToLower()}", customer);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        // Typically an error log is produced here
-        //        return ValidationProblem(e.Message);
-        //    }
-        //}
+        [HttpPut]
+        [Route("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateCustomer([FromBody] Customer customerUpdates, [FromRoute] int id)
+        {
+            try
+            {
+                var customer = await _dao.GetCustomerById(id);
+                if (customer == null)
+                {
+                    return StatusCode(404);
+                }
+                await _dao.UpdateCustomer(customerUpdates, id);
+                return StatusCode(200);
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 }
