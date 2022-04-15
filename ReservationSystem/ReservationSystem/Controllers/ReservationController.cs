@@ -111,16 +111,61 @@ namespace ReservationSystem.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateReservation([FromBody] Reservation newReservation)
         {
+            int capacityCounter = newReservation.PartySize;
             try
             {
-                await _dao.CreateReservation(newReservation);
-                return StatusCode(204);
+                var reservations = await _dao.GetReservationByLocationId(int.Parse(newReservation.LocationId));
+                var location = await _dao.GetLocationById(int.Parse(newReservation.LocationId));
+                if (DateTime.Parse(newReservation.ReservationTime.ToString()).Hour >= DateTime.Parse(location.OpenTime.ToString()).Hour &&
+                    DateTime.Parse(newReservation.ReservationTime.ToString()).Hour < DateTime.Parse(location.CloseTime.ToString()).Hour)
+                {
+                    if (capacityCounter > location.Capacity)
+                    {
+                        return ValidationProblem($"This location cannot host a party of this size. Maximum party size allowed is {location.Capacity}");
+                    }
+                    List<Reservation> overlappingReservationsList = new List<Reservation>();
+                    foreach (Reservation r in reservations)
+                    {
+                        capacityCounter = newReservation.PartySize;
+                        int overlappingCapacityCount = newReservation.PartySize;
+                        if (r.CheckOverlap(newReservation, r))
+                        {
+                            foreach (Reservation overlap in overlappingReservationsList)
+                            {
+
+                                if (r.CheckOverlap(r, overlap))
+                                {
+                                    overlappingCapacityCount += overlap.PartySize + r.PartySize;
+                                    if (overlappingCapacityCount > location.Capacity)
+                                    {
+                                        return ValidationProblem($"Not enough tables available at this time [Overlap].");
+                                    }
+                                }
+                            }
+                            overlappingReservationsList.Add(r);
+                            capacityCounter += r.PartySize;
+                            if (capacityCounter > location.Capacity)
+                            {
+                                return ValidationProblem($"Not enough tables available at this time.");
+                            }
+                        }
+                    }
+                    await _dao.CreateReservation(newReservation);
+                    return StatusCode(200);
+
+                }
+                else
+                {
+                    return ValidationProblem($"Adding Reservation Outside Operating Hours. Operating Hours are {location.OpenTime} - {location.CloseTime}");
+                }
             }
             catch (Exception e)
             {
                 return StatusCode(500, e.Message);
             }
         }
+
+
 
         [HttpDelete]
         [Route("{id}")]

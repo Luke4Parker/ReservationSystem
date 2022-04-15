@@ -32,5 +32,35 @@ namespace ReservationSystem.Models
         [Display(Name = "reservationDateTime")]
         public object ReservationTime { get; set; }
 
+
+        public bool CheckOverlap(Reservation newReservation, Reservation existingReservation)
+        {
+            var nrTime = DateTime.Parse(newReservation.ReservationTime.ToString());
+            var erTime = DateTime.Parse(existingReservation.ReservationTime.ToString());
+
+            //check if new reservation starts during existing reservation
+            //TODO this expects the end point to put in the number of hours you want and does not accept non-int values.
+            //Since our validation checks are inclusive (equal to) start or end times we are unable to make reservations of 1 hour length at consecutive hours
+
+            if (nrTime <= erTime.Add(TimeSpan.FromHours(existingReservation.Length)) &&
+                nrTime >= erTime)
+            {
+                return true;
+            }
+
+            //check if new reservation will be long enough to overlap with existing reservation
+            else if (nrTime >= erTime.Subtract(TimeSpan.FromHours(newReservation.Length)) &&
+                nrTime <= erTime)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
     }
+
+    
 }
