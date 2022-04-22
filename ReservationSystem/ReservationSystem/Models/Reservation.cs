@@ -42,7 +42,7 @@ namespace ReservationSystem.Models
             //TODO this expects the end point to put in the number of hours you want and does not accept non-int values.
             //Since our validation checks are inclusive (equal to) start or end times we are unable to make reservations of 1 hour length at consecutive hours
 
-            if (nrTime <= erTime.Add(TimeSpan.FromHours(existingReservation.Length)) &&
+            if (nrTime < erTime.Add(TimeSpan.FromHours(existingReservation.Length)) &&
                 nrTime >= erTime)
             {
                 return true;
