@@ -133,7 +133,7 @@ namespace ReservationSystem.Controllers
                         {
                             int overlappingCapacityCount = newReservation.PartySize;
 
-                            if (r.CheckOverlap(newReservation, r))
+                            if (Reservation.CheckOverlap(newReservation, r))
                             {
                                 if (overlappingReservationsList.Count() < 1)
                                 {
@@ -141,7 +141,7 @@ namespace ReservationSystem.Controllers
                                     overlappingCapacityCount += r.PartySize;
                                     if (overlappingCapacityCount > location.Capacity)
                                     {
-                                        return ValidationProblem($"Not enough tables available at this time [Overlap].");
+                                        return ValidationProblem($"Not enough tables available at this time.");
                                     }
                                 }
                                 else
@@ -150,12 +150,12 @@ namespace ReservationSystem.Controllers
                                     foreach (Reservation overlap in overlappingReservationsList)
                                     {
 
-                                        if (r.CheckOverlap(r, overlap))
+                                        if (Reservation.CheckOverlap(r, overlap))
                                         {
                                             overlappingCapacityCount += overlap.PartySize;
                                             if (overlappingCapacityCount > location.Capacity)
                                             {
-                                                return ValidationProblem($"Not enough tables available at this time [Overlap].");
+                                                return ValidationProblem($"Not enough tables available at this time.");
                                             }
                                         }
                                     }
@@ -237,7 +237,7 @@ namespace ReservationSystem.Controllers
                         {
                             int overlappingCapacityCount = reservationUpdates.PartySize;
 
-                            if (r.CheckOverlap(reservationUpdates, r))
+                            if (Reservation.CheckOverlap(reservationUpdates, r))
                             {
                                 if (overlappingReservationsList.Count() < 1)
                                 {
@@ -245,7 +245,7 @@ namespace ReservationSystem.Controllers
                                     overlappingCapacityCount += r.PartySize;
                                     if (overlappingCapacityCount > location.Capacity)
                                     {
-                                        return ValidationProblem($"Not enough tables available at this time [Overlap].");
+                                        return ValidationProblem($"Not enough tables available at this time.");
                                     }
                                 }
                                 else
@@ -254,12 +254,12 @@ namespace ReservationSystem.Controllers
                                     foreach (Reservation overlap in overlappingReservationsList)
                                     {
 
-                                        if (r.CheckOverlap(r, overlap))
+                                        if (Reservation.CheckOverlap(r, overlap))
                                         {
                                             overlappingCapacityCount += overlap.PartySize;
                                             if (overlappingCapacityCount > location.Capacity)
                                             {
-                                                return ValidationProblem($"Not enough tables available at this time [Overlap].");
+                                                return ValidationProblem($"Not enough tables available at this time.");
                                             }
                                         }
                                     }
