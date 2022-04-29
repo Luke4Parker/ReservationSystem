@@ -24,19 +24,19 @@ namespace ReservationSystem.Daos
 
             if (!string.IsNullOrEmpty(customerQuery.FirstName))
             {
-                query += $"AND FirstName = '{customerQuery.FirstName}'"; 
+                query += $"AND FirstName LIKE '%{customerQuery.FirstName}%'"; 
             }
             if (!string.IsNullOrEmpty(customerQuery.LastName))
             {
-                query += $"AND LastName = '{customerQuery.LastName}'";
+                query += $"AND LastName LIKE '%{customerQuery.LastName}%'";
             }
             if (!string.IsNullOrEmpty(customerQuery.Phone))
             {
-                query += $"AND Phone = '{customerQuery.Phone}'";
+                query += $"AND Phone LIKE '%{customerQuery.Phone}%'";
             }
             if (!string.IsNullOrEmpty(customerQuery.Email))
             {
-                query += $"AND Email = '{customerQuery.Email}'";
+                query += $"AND Email LIKE '%{customerQuery.Email}%'";
             }
 
             using (var connection = _context.CreateConnection())
@@ -94,15 +94,15 @@ namespace ReservationSystem.Daos
 
             if (!string.IsNullOrEmpty(locationQuery.Name))
             {
-                query += $"AND [Name] = '{locationQuery.Name}'";
+                query += $"AND [Name] LIKE '%{locationQuery.Name}%'";
             }
             if (!string.IsNullOrEmpty(locationQuery.City))
             {
-                query += $"AND City = '{locationQuery.City}'";
+                query += $"AND City LIKE '%{locationQuery.City}%'";
             }
             if (!string.IsNullOrEmpty(locationQuery.State))
             {
-                query += $"AND [State] = '{locationQuery.State}'";
+                query += $"AND [State] LIKE '%{locationQuery.State}%'";
             }
             if (locationQuery.Capacity.HasValue)
             {
