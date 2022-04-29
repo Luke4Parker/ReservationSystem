@@ -25,11 +25,11 @@ namespace ReservationSystem.Controllers
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetCustomers()
+        public async Task<IActionResult> GetCustomers([FromQuery] CustomerNullable customerQuery)
         {
             try
             {
-                var customers = await _dao.GetCustomers();
+                var customers = await _dao.GetCustomers(customerQuery);
                 return Ok(customers);
             }
             catch (Exception e)
@@ -64,7 +64,7 @@ namespace ReservationSystem.Controllers
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> CreateCustomer([FromBody] Customer newCustomer)
+        public async Task<IActionResult> CreateCustomer([FromBody] CustomerNullable newCustomer)
         {
             try
             {
@@ -103,7 +103,7 @@ namespace ReservationSystem.Controllers
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateCustomer([FromBody] Customer customerUpdates, [FromRoute] int id)
+        public async Task<IActionResult> UpdateCustomer([FromBody] CustomerNullable customerUpdates, [FromRoute] int id)
         {
             try
             {

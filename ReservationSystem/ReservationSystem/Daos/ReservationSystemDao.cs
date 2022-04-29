@@ -73,14 +73,30 @@ namespace ReservationSystem.Daos
         //End Location SQL Requests
         //***************************************************
         //Begin Customer SQL requests
-
-        public async Task<IEnumerable<Customer>> GetCustomers()
+        public async Task<IEnumerable<Customer>> GetCustomers(CustomerNullable customerQuery)
         {
-            var query = "SELECT * FROM Customer";
+            var query = "SELECT * FROM Customer WHERE 1=1";
+
+            if (!string.IsNullOrEmpty(customerQuery.FirstName))
+            {
+                query += $"AND FirstName = '{customerQuery.FirstName}'"; 
+            }S
+            if (!string.IsNullOrEmpty(customerQuery.LastName))
+            {
+                query += $"AND LastName = '{customerQuery.LastName}'";
+            }
+            if (!string.IsNullOrEmpty(customerQuery.Phone))
+            {
+                query += $"AND Phone = '{customerQuery.Phone}'";
+            }
+            if (!string.IsNullOrEmpty(customerQuery.Email))
+            {
+                query += $"AND Email = '{customerQuery.Email}'";
+            }
+
             using (var connection = _context.CreateConnection())
             {
                 var customers = await connection.QueryAsync<Customer>(query);
-
                 return customers.ToList();
             }
         }
@@ -95,7 +111,7 @@ namespace ReservationSystem.Daos
                 return customer;
             }
         }
-        public async Task CreateCustomer(Customer newCustomer)
+        public async Task CreateCustomer(CustomerNullable newCustomer)
         {
             var query = $"INSERT INTO Customer (FirstName, LastName, Phone, Email) " +
                 $"VALUES ('{newCustomer.FirstName}', '{newCustomer.LastName}', '{newCustomer.Phone}', '{newCustomer.Email}')";
@@ -114,7 +130,7 @@ namespace ReservationSystem.Daos
             }
         }
 
-        public async Task UpdateCustomer(Customer customerUpdates, int id)
+        public async Task UpdateCustomer(CustomerNullable customerUpdates, int id)
         {
             var query = $"UPDATE Customer SET FirstName = '{customerUpdates.FirstName}', LastName = '{customerUpdates.LastName}', Email = '{customerUpdates.Email}', " +
                 $"Phone = '{customerUpdates.Phone}' WHERE Id = {id}";
