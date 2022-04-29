@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace ReservationSystem.Models
 {
@@ -18,7 +19,31 @@ namespace ReservationSystem.Models
         public int? PartySize { get; set; }
 
         [Display(Name = "Reservation Date Time")]
-        public object? ReservationTime { get; set; }
+        public string? ReservationTime { get; set; }
 
+
+        public static bool CheckOverlap(ReservationNullable newReservation, Reservation existingReservation)
+        {
+            var nrTime = DateTime.Parse(newReservation.ReservationTime.ToString());
+            var erTime = DateTime.Parse(existingReservation.ReservationTime.ToString());
+
+            //check if new reservation starts during existing reservation            
+            if (nrTime < erTime.Add(TimeSpan.FromHours(existingReservation.Length)) &&
+                nrTime >= erTime)
+            {
+                return true;
+            }
+
+            //check if new reservation will be long enough to overlap with existing reservation
+            else if (nrTime >= erTime.Subtract(TimeSpan.FromHours((float)newReservation.Length)) &&
+                nrTime <= erTime)
+            {
+                return true;
+            }
+            else        
+            {
+                return false;
+            }
+        }
     }
 }

@@ -26,81 +26,15 @@ namespace ReservationSystem.Controllers
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetReservations()
+        public async Task<IActionResult> GetReservations([FromQuery] ReservationNullable reservationQuery)
         {
             try
             {
-                var reservations = await _dao.GetReservations();
+                var reservations = await _dao.GetReservations(reservationQuery);
                 return Ok(reservations);
             }
             catch (Exception e)
             {
-                return StatusCode(500, e.Message);
-            }
-        }
-
-        [HttpGet]
-        [Route("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetReservationById([FromRoute] int id)
-        {
-            try
-            {
-                var reservation = await _dao.GetReservationById(id);
-                if (reservation == null)
-                {
-                    return ValidationProblem($"Reservation with id: {id} was not found."); 
-                }
-                return Ok(reservation);
-            }
-            catch (Exception e)
-            {
-
-                return StatusCode(500, e.Message);
-            }
-        }
-
-        [HttpGet]
-        [Route("customer/{customerId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetReservationByCustomerId([FromRoute] int customerId)
-        {
-            try
-            {
-                var reservations = await _dao.GetReservationByCustomerId(customerId);
-                if (reservations == null)
-                {
-                    return ValidationProblem($"Reservation for customer id {customerId} was not found.");
-                }
-                return Ok(reservations);
-            }
-            catch (Exception e)
-            {
-
-                return StatusCode(500, e.Message);
-            }
-        }
-
-        [HttpGet]
-        [Route("location/{locationId}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetReservationByLocationId([FromRoute] int locationId)
-        {
-            try
-            {
-                var reservations = await _dao.GetReservationByLocationId(locationId);
-                if (reservations == null)
-                {
-                    return StatusCode(404);
-                }
-                return Ok(reservations);
-            }
-            catch (Exception e)
-            {
-
                 return StatusCode(500, e.Message);
             }
         }
@@ -109,11 +43,11 @@ namespace ReservationSystem.Controllers
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> CreateReservation([FromBody] Reservation newReservation)
+        public async Task<IActionResult> CreateReservation([FromBody] ReservationNullable newReservation)
         {
-            int capacityCounter = newReservation.PartySize;
             try
             {
+                int capacityCounter = (int)newReservation.PartySize;
                 var reservations = await _dao.GetReservationByLocationId(int.Parse(newReservation.LocationId));
                 var location = await _dao.GetLocationById(int.Parse(newReservation.LocationId));
 
@@ -131,37 +65,44 @@ namespace ReservationSystem.Controllers
                         List<Reservation> overlappingReservationsList = new List<Reservation>();
                         foreach (Reservation r in reservations)
                         {
-                            int overlappingCapacityCount = newReservation.PartySize;
-
-                            if (Reservation.CheckOverlap(newReservation, r))
+                            try
                             {
-                                if (overlappingReservationsList.Count() < 1)
-                                {
-                                    overlappingReservationsList.Add(r);
-                                    overlappingCapacityCount += r.PartySize;
-                                    if (overlappingCapacityCount > location.Capacity)
-                                    {
-                                        return ValidationProblem($"Not enough tables available at this time.");
-                                    }
-                                }
-                                else
-                                {
-                                    overlappingCapacityCount += r.PartySize;
-                                    foreach (Reservation overlap in overlappingReservationsList)
-                                    {
+                                int overlappingCapacityCount = (int)newReservation.PartySize;
 
-                                        if (Reservation.CheckOverlap(r, overlap))
+                                if (ReservationNullable.CheckOverlap(newReservation, r))
+                                {
+                                    if (overlappingReservationsList.Count() < 1)
+                                    {
+                                        overlappingReservationsList.Add(r);
+                                        overlappingCapacityCount += r.PartySize;
+                                        if (overlappingCapacityCount > location.Capacity)
                                         {
-                                            overlappingCapacityCount += overlap.PartySize;
-                                            if (overlappingCapacityCount > location.Capacity)
-                                            {
-                                                return ValidationProblem($"Not enough tables available at this time.");
-                                            }
+                                            return ValidationProblem($"Not enough tables available at this time.");
                                         }
                                     }
+                                    else
+                                    {
+                                        overlappingCapacityCount += r.PartySize;
+                                        foreach (Reservation overlap in overlappingReservationsList)
+                                        {
 
-                                    overlappingReservationsList.Add(r);
+                                            if (Reservation.CheckOverlap(r, overlap))
+                                            {
+                                                overlappingCapacityCount += overlap.PartySize;
+                                                if (overlappingCapacityCount > location.Capacity)
+                                                {
+                                                    return ValidationProblem($"Not enough tables available at this time.");
+                                                }
+                                            }
+                                        }
+
+                                        overlappingReservationsList.Add(r);
+                                    }
                                 }
+                            }
+                            catch (ArgumentNullException)
+                            {
+                                return ValidationProblem("Party size cannot be null");
                             }
                         } 
                     }
@@ -174,6 +115,10 @@ namespace ReservationSystem.Controllers
                 {
                     return ValidationProblem($"Adding Reservation Outside Operating Hours. Operating Hours are {location.OpenTime} - {location.CloseTime}");
                 }
+            }
+            catch (NullReferenceException)
+            {
+                return ValidationProblem("Reservation attributes cannot be null");
             }
             catch (Exception e)
             {
@@ -207,7 +152,7 @@ namespace ReservationSystem.Controllers
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateReservation([FromBody] Reservation reservationUpdates, [FromRoute] int id)
+        public async Task<IActionResult> UpdateReservation([FromBody] ReservationNullable reservationUpdates, [FromRoute] int id)
         {
             var reservation = await _dao.GetReservationById(id);
             if (reservation == null)
@@ -215,9 +160,9 @@ namespace ReservationSystem.Controllers
                 return ValidationProblem($"Reservation with id:{id} was not found.");
             }
 
-            int capacityCounter = reservationUpdates.PartySize;
             try
             {
+                int capacityCounter = (int)reservationUpdates.PartySize;
                 var reservations = await _dao.GetReservationByLocationId(int.Parse(reservationUpdates.LocationId));
                 var location = await _dao.GetLocationById(int.Parse(reservationUpdates.LocationId));
 
@@ -235,38 +180,45 @@ namespace ReservationSystem.Controllers
                         List<Reservation> overlappingReservationsList = new List<Reservation>();
                         foreach (Reservation r in reservations)
                         {
-                            int overlappingCapacityCount = reservationUpdates.PartySize;
-
-                            if (Reservation.CheckOverlap(reservationUpdates, r))
+                            try
                             {
-                                if (overlappingReservationsList.Count() < 1)
-                                {
-                                    overlappingReservationsList.Add(r);
-                                    overlappingCapacityCount += r.PartySize;
-                                    if (overlappingCapacityCount > location.Capacity)
-                                    {
-                                        return ValidationProblem($"Not enough tables available at this time.");
-                                    }
-                                }
-                                else
-                                {
-                                    overlappingCapacityCount += r.PartySize;
-                                    foreach (Reservation overlap in overlappingReservationsList)
-                                    {
+                                int overlappingCapacityCount = (int)reservationUpdates.PartySize;
 
-                                        if (Reservation.CheckOverlap(r, overlap))
+                                if (ReservationNullable.CheckOverlap(reservationUpdates, r))
+                                {
+                                    if (overlappingReservationsList.Count() < 1)
+                                    {
+                                        overlappingReservationsList.Add(r);
+                                        overlappingCapacityCount += r.PartySize;
+                                        if (overlappingCapacityCount > location.Capacity)
                                         {
-                                            overlappingCapacityCount += overlap.PartySize;
-                                            if (overlappingCapacityCount > location.Capacity)
-                                            {
-                                                return ValidationProblem($"Not enough tables available at this time.");
-                                            }
+                                            return ValidationProblem($"Not enough tables available at this time.");
                                         }
                                     }
+                                    else
+                                    {
+                                        overlappingCapacityCount += r.PartySize;
+                                        foreach (Reservation overlap in overlappingReservationsList)
+                                        {
 
-                                    overlappingReservationsList.Add(r);
+                                            if (Reservation.CheckOverlap(r, overlap))
+                                            {
+                                                overlappingCapacityCount += overlap.PartySize;
+                                                if (overlappingCapacityCount > location.Capacity)
+                                                {
+                                                    return ValidationProblem($"Not enough tables available at this time.");
+                                                }
+                                            }
+                                        }
+
+                                        overlappingReservationsList.Add(r);
+                                    }
                                 }
                             }
+                            catch (ArgumentNullException)
+                            {
+                                return ValidationProblem("Party size cannot be null");
+                            }                            
                         }
                     }
 
@@ -278,6 +230,10 @@ namespace ReservationSystem.Controllers
                 {
                     return ValidationProblem($"Adding Reservation Outside Operating Hours. Operating Hours are {location.OpenTime} - {location.CloseTime}");
                 }
+            }
+            catch (NullReferenceException)
+            {
+                return ValidationProblem("Reservation attributes cannot be null");
             }
             catch (Exception e)
             {

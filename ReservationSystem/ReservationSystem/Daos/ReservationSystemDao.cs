@@ -173,13 +173,34 @@ namespace ReservationSystem.Daos
         //************************************************************
         //Begin Reservation SQL Requests
 
-        public async Task<IEnumerable<Reservation>> GetReservations()
+        public async Task<IEnumerable<Reservation>> GetReservations(ReservationNullable reservationQuery)
         {
-            var query = "SELECT * FROM Reservation";
+            var query = "SELECT * FROM Reservation WHERE 1=1";
+
+            if (!string.IsNullOrEmpty(reservationQuery.LocationId))
+            {
+                query += $"AND LocationId = '{reservationQuery.LocationId}'";
+            }
+            if (!string.IsNullOrEmpty(reservationQuery.CustomerId))
+            {
+                query += $"AND CustomerId = '{reservationQuery.CustomerId}'";
+            }
+            if (reservationQuery.Length.HasValue)
+            {
+                query += $"AND Length = {reservationQuery.Length}";
+            }
+            if (reservationQuery.PartySize.HasValue)
+            {
+                query += $"AND PartySize = {reservationQuery.PartySize}";
+            }
+            if (!string.IsNullOrEmpty(reservationQuery.ReservationTime))
+            {
+                query += $"AND ReservationTime = '{reservationQuery.ReservationTime}'";
+            }
+
             using (var connection = _context.CreateConnection())
             {
                 var reservations = await connection.QueryAsync<Reservation>(query);
-
                 return reservations.ToList();
             }
         }
@@ -217,7 +238,7 @@ namespace ReservationSystem.Daos
             }
         }
 
-        public async Task CreateReservation(Reservation newReservation)
+        public async Task CreateReservation(ReservationNullable newReservation)
         {
             var query = $"INSERT INTO Reservation ([Length], PartySize, ReservationTime, CustomerId, LocationId) " +
                 $"VALUES ('{newReservation.Length}', '{newReservation.PartySize}', '{newReservation.ReservationTime}', '{newReservation.CustomerId}', '{newReservation.LocationId}')";
@@ -236,7 +257,7 @@ namespace ReservationSystem.Daos
             }
         }
 
-        public async Task UpdateReservation(Reservation reservationUpdates, int id)
+        public async Task UpdateReservation(ReservationNullable reservationUpdates, int id)
         {
             var query = $"UPDATE Reservation SET [Length] = {reservationUpdates.Length}, PartySize = {reservationUpdates.PartySize}, ReservationTime = '{reservationUpdates.ReservationTime}', " +
                 $"CustomerId = {reservationUpdates.CustomerId}, LocationId = {reservationUpdates.LocationId} WHERE Id = {id}";

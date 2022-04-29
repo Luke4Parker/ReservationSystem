@@ -29,7 +29,6 @@ namespace ReservationSystem.Models
         [Display(Name = "Reservation Date Time")]
         public object ReservationTime { get; set; }
 
-
         public static bool CheckOverlap(Reservation newReservation, Reservation existingReservation)
         {
             var nrTime = DateTime.Parse(newReservation.ReservationTime.ToString());
@@ -52,9 +51,6 @@ namespace ReservationSystem.Models
             {
                 return false;
             }
-
         }
     }
-
-    
 }
