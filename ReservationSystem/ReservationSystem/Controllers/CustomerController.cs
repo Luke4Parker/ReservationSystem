@@ -38,28 +38,6 @@ namespace ReservationSystem.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetCustomerById([FromRoute] int id)
-        {
-            try
-            {
-                var customer = await _dao.GetCustomerById(id);
-                if (customer == null)
-                {
-                    return ValidationProblem($"Customer with id {id} was not found.");
-                }
-                return Ok(customer);
-            }
-            catch (Exception e)
-            {
-
-                return StatusCode(500, e.Message);
-            }
-        }
-
         [HttpPost]
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]

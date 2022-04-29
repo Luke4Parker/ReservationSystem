@@ -7,30 +7,30 @@ namespace ReservationSystem.Models
     {
         [Key]
         [Required]
-        [Display(Name = "locationId")]
+        [Display(Name = "Location Id")]
         public string Id { get; set; }
         [Required]
-        [Display(Name = "locationName")]
+        [Display(Name = "Location Name")]
         public string Name { get; set; }
         [Required]
-        [Display(Name = "locationCity")]
+        [Display(Name = "Location City")]
         public string City { get; set; }
         [Required]
-        [Display(Name = "locationState")]
+        [Display(Name = "Location State")]
         public string State { get; set; }
         [Required]
         [Range(0, 1000)]
-        [Display(Name = "locationCapacity")]
+        [Display(Name = "Location Capacity")]
         public int Capacity { get; set; }
         [Required]
-        [Display(Name = "locationOpenTime")]
+        [Display(Name = "Location Open Time")]
         public object OpenTime { get; set; } 
         [Required]
-        [Display(Name = "locationCloseTime")]
+        [Display(Name = "Location Close Time")]
         public object CloseTime { get; set; }
         [Required]
-        [Display(Name = "brandId")]
-        public int BrandId { get; set; }
+        [Display(Name = "Brand Id")]
+        public string BrandId { get; set; }
 
     }
 }

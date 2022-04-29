@@ -15,62 +15,7 @@ namespace ReservationSystem.Daos
         {
             _context = context;
         }
-        
-        //************************************************************
-        //Begin Location Sql Requests
-        public async Task<IEnumerable<Location>> GetLocations()
-        {
-            var query = "SELECT * FROM Location";
-            using (var connection = _context.CreateConnection())
-            {
-                var locations = await connection.QueryAsync<Location>(query);
-
-                return locations.ToList();
-            }
-        }
-
-        public async Task<Location> GetLocationById(int id)
-        {
-            var query = $"SELECT * FROM Location WHERE Id = {id}";
-            using (var connection = _context.CreateConnection())
-            {
-                var location = await connection.QueryFirstOrDefaultAsync<Location>(query);
-
-                return location;
-            }
-        }
-        public async Task CreateLocation(Location newLocation)
-        {
-            var query = $"INSERT INTO Location ([Name], City, [State], Capacity, OpenTime, CloseTime, BrandId) " +
-                $"VALUES ('{newLocation.Name}', '{newLocation.City}', '{newLocation.State}', {newLocation.Capacity}," +
-                $" '{newLocation.OpenTime}', '{newLocation.CloseTime}', {newLocation.BrandId})";
-            using (var connection = _context.CreateConnection())
-            {
-                await connection.ExecuteAsync(query);
-            }
-        }
-
-        public async Task DeleteLocation(int id)
-        {
-            var query = $"DELETE FROM Location WHERE Id = {id}";
-            using (var connection = _context.CreateConnection())
-            {
-                await connection.ExecuteAsync(query);                
-            }
-        }
-
-        public async Task UpdateLocation(Location locationUpdates, int id)
-        {
-            var query = $"UPDATE Location SET [Name] = '{locationUpdates.Name}', City = '{locationUpdates.City}', [State] = '{locationUpdates.State}', " +
-                $"Capacity = {locationUpdates.Capacity}, OpenTime = '{locationUpdates.OpenTime}', " +
-                $"CloseTime = '{locationUpdates.CloseTime}', BrandId = {locationUpdates.BrandId} WHERE Id = {id}";
-            using (var connection = _context.CreateConnection())
-            {
-                await connection.ExecuteAsync(query);
-            }
-        }
-
-        //End Location SQL Requests
+                
         //***************************************************
         //Begin Customer SQL requests
         public async Task<IEnumerable<Customer>> GetCustomers(CustomerNullable customerQuery)
@@ -80,7 +25,7 @@ namespace ReservationSystem.Daos
             if (!string.IsNullOrEmpty(customerQuery.FirstName))
             {
                 query += $"AND FirstName = '{customerQuery.FirstName}'"; 
-            }S
+            }
             if (!string.IsNullOrEmpty(customerQuery.LastName))
             {
                 query += $"AND LastName = '{customerQuery.LastName}'";
@@ -142,6 +87,90 @@ namespace ReservationSystem.Daos
 
         //End Customer SQL Requests
         //******************************************************
+        //Begin Location Sql Requests
+        public async Task<IEnumerable<Location>> GetLocations(LocationNullable locationQuery)
+        {
+            var query = "SELECT * FROM Location WHERE 1=1";
+
+            if (!string.IsNullOrEmpty(locationQuery.Name))
+            {
+                query += $"AND [Name] = '{locationQuery.Name}'";
+            }
+            if (!string.IsNullOrEmpty(locationQuery.City))
+            {
+                query += $"AND City = '{locationQuery.City}'";
+            }
+            if (!string.IsNullOrEmpty(locationQuery.State))
+            {
+                query += $"AND [State] = '{locationQuery.State}'";
+            }
+            if (locationQuery.Capacity.HasValue)
+            {
+                query += $"AND Capacity >= '{locationQuery.Capacity}'";
+            }
+            if (!string.IsNullOrEmpty(locationQuery.OpenTime))
+            {
+                query += $"AND OpenTime = '{locationQuery.OpenTime}'";
+            }
+            if (!string.IsNullOrEmpty(locationQuery.CloseTime))
+            {
+                query += $"AND CloseTime = '{locationQuery.CloseTime}'";
+            }
+            if (!string.IsNullOrEmpty(locationQuery.BrandId))
+            {
+                query += $"AND BrandId = '{locationQuery.BrandId}'";
+            }
+
+            using (var connection = _context.CreateConnection())
+            {
+                var locations = await connection.QueryAsync<Location>(query);
+                return locations.ToList();
+            }
+        }
+
+        public async Task<Location> GetLocationById(int id)
+        {
+            var query = $"SELECT * FROM Location WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                var location = await connection.QueryFirstOrDefaultAsync<Location>(query);
+
+                return location;
+            }
+        }
+        public async Task CreateLocation(LocationNullable newLocation)
+        {
+            var query = $"INSERT INTO Location ([Name], City, [State], Capacity, OpenTime, CloseTime, BrandId) " +
+                $"VALUES ('{newLocation.Name}', '{newLocation.City}', '{newLocation.State}', {newLocation.Capacity}," +
+                $" '{newLocation.OpenTime}', '{newLocation.CloseTime}', '{newLocation.BrandId}')";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
+            }
+        }
+
+        public async Task DeleteLocation(int id)
+        {
+            var query = $"DELETE FROM Location WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
+            }
+        }
+
+        public async Task UpdateLocation(LocationNullable locationUpdates, int id)
+        {
+            var query = $"UPDATE Location SET [Name] = '{locationUpdates.Name}', City = '{locationUpdates.City}', [State] = '{locationUpdates.State}', " +
+                $"Capacity = {locationUpdates.Capacity}, OpenTime = '{locationUpdates.OpenTime}', " +
+                $"CloseTime = '{locationUpdates.CloseTime}', BrandId = '{locationUpdates.BrandId}' WHERE Id = {id}";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
+            }
+        }
+
+        //End Location SQL Requests
+        //************************************************************
         //Begin Reservation SQL Requests
 
         public async Task<IEnumerable<Reservation>> GetReservations()
@@ -191,7 +220,7 @@ namespace ReservationSystem.Daos
         public async Task CreateReservation(Reservation newReservation)
         {
             var query = $"INSERT INTO Reservation ([Length], PartySize, ReservationTime, CustomerId, LocationId) " +
-                $"VALUES ('{newReservation.Length}', '{newReservation.PartySize}', '{newReservation.ReservationTime}', {newReservation.CustomerId}, {newReservation.LocationId})";
+                $"VALUES ('{newReservation.Length}', '{newReservation.PartySize}', '{newReservation.ReservationTime}', '{newReservation.CustomerId}', '{newReservation.LocationId}')";
             using (var connection = _context.CreateConnection())
             {
                 await connection.ExecuteAsync(query);

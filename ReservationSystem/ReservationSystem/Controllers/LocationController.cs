@@ -25,38 +25,15 @@ namespace ReservationSystem.Controllers
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetLocations()
+        public async Task<IActionResult> GetLocations([FromQuery] LocationNullable locationQuery)
         {
             try
             {
-                var locations = await _dao.GetLocations();
+                var locations = await _dao.GetLocations(locationQuery);
                 return Ok(locations);
             }
             catch (Exception e)
             {
-
-                return StatusCode(500, e.Message);
-            }
-        }
-
-        [HttpGet]
-        [Route("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetLocationById([FromRoute] int id)
-        {
-            try
-            {
-                var location = await _dao.GetLocationById(id);
-                if (location == null)
-                {
-                    return ValidationProblem($"Location with id: {id} was not found.");
-                }
-                return Ok(location);
-            }
-            catch (Exception e)
-            {
-
                 return StatusCode(500, e.Message);
             }
         }
@@ -65,7 +42,7 @@ namespace ReservationSystem.Controllers
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> CreateLocation([FromBody] Location newLocation)
+        public async Task<IActionResult> CreateLocation([FromBody] LocationNullable newLocation)
         {
             try
             {
@@ -104,7 +81,7 @@ namespace ReservationSystem.Controllers
         [Route("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateLocation([FromBody] Location locationUpdates, [FromRoute] int id)
+        public async Task<IActionResult> UpdateLocation([FromBody] LocationNullable locationUpdates, [FromRoute] int id)
         {
             try
             {

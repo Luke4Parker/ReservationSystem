@@ -6,27 +6,27 @@ namespace ReservationSystem.Models
     public class Reservation
     {
         [Required]
-        [Display(Name = "reservationId")]
+        [Display(Name = "Reservation Id")]
         public string Id { get; set; }
 
         [Required]
-        [Display(Name = "locationId")]
+        [Display(Name = "Location Id")]
         public string LocationId { get; set; }
 
         [Required]
-        [Display(Name = "customerId")]
+        [Display(Name = "Customer Id")]
         public string CustomerId { get; set; }
 
         [Required]
-        [Display(Name = "reservationLength")]
+        [Display(Name = "Reservation Length")]
         public float Length { get; set; }
 
         [Required]
-        [Display(Name = "partySize")]
+        [Display(Name = "Party Size")]
         public int PartySize { get; set; }
 
         [Required]
-        [Display(Name = "reservationDateTime")]
+        [Display(Name = "Reservation Date Time")]
         public object ReservationTime { get; set; }
 
 

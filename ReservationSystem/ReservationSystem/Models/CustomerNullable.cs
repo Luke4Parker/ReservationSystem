@@ -4,16 +4,16 @@ namespace ReservationSystem.Models
 {
     public class CustomerNullable
     {
-        [Display(Name = "customerFirstName")]
+        [Display(Name = "Customer First Name")]
         public string? FirstName { get; set; }
 
-        [Display(Name = "customerLastName")]
+        [Display(Name = "Customer Last Name")]
         public string? LastName { get; set; }
 
-        [Display(Name = "customerPhone")]
+        [Display(Name = "Customer Phone")]
         public string? Phone { get; set; }
 
-        [Display(Name = "customerEmail")]
+        [Display(Name = "Customer Email")]
         public string? Email { get; set; }
 
     }

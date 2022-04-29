@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ReservationSystem.Models
 {
@@ -10,14 +6,10 @@ namespace ReservationSystem.Models
     {
         [Key]
         [Required]
-        [Display(Name = "brandId")]
+        [Display(Name = "Brand Id")]
         public string BrandId { get; set; }
         [Required]
-        [Display(Name = "brandName")]
+        [Display(Name = "Brand Name")]
         public string BrandName { get; set; }
-
-        [Required]
-        [Display(Name = "locations")]
-        public virtual List<Location> Locations { get; set; }
     }
 }

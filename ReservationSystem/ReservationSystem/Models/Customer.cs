@@ -6,23 +6,23 @@ namespace ReservationSystem.Models
     {
         [Key]
         [Required]
-        [Display(Name="customerId")]
+        [Display(Name="Customer Id")]
         public string Id { get; set; }
 
         [Required]
-        [Display(Name="customerFirstName")]
+        [Display(Name="Customer First Name")]
         public string FirstName { get; set; }
 
         [Required]
-        [Display(Name = "customerLastName")]
+        [Display(Name = "Customer Last Name")]
         public string LastName { get; set; }
 
         [Required]
-        [Display(Name = "customerPhone")]
+        [Display(Name = "Customer Phone")]
         public string Phone { get; set; }
 
         [Required]
-        [Display(Name = "customerEmail")]
+        [Display(Name = "Customer Email")]
         public string Email { get; set; }
 
     }
