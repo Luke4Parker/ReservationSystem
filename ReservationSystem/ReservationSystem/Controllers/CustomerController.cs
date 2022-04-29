@@ -49,7 +49,7 @@ namespace ReservationSystem.Controllers
                 var customer = await _dao.GetCustomerById(id);
                 if (customer == null)
                 {
-                    return StatusCode(404);
+                    return ValidationProblem($"Customer with id {id} was not found.");
                 }
                 return Ok(customer);
             }
@@ -88,7 +88,7 @@ namespace ReservationSystem.Controllers
                 var customer = await _dao.GetCustomerById(id);
                 if (customer == null)
                 {
-                    return StatusCode(404);
+                    return ValidationProblem($"Customer with id {id} was not found.");
                 }
                 await _dao.DeleteCustomer(id);
                 return StatusCode(200);
@@ -110,7 +110,7 @@ namespace ReservationSystem.Controllers
                 var customer = await _dao.GetCustomerById(id);
                 if (customer == null)
                 {
-                    return StatusCode(404);
+                    return ValidationProblem($"Customer with id {id} was not found.");
                 }
                 await _dao.UpdateCustomer(customerUpdates, id);
                 return StatusCode(200);

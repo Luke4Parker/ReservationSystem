@@ -21,8 +21,6 @@ namespace ReservationSystem.Controllers
             _dao = dao;
         }
 
-        //Get requests - This section contains Get Requests for location and reservations
-        //**************************
         [HttpGet]
         [Route("")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -52,7 +50,7 @@ namespace ReservationSystem.Controllers
                 var location = await _dao.GetLocationById(id);
                 if (location == null)
                 {
-                    return StatusCode(404);
+                    return ValidationProblem($"Location with id: {id} was not found.");
                 }
                 return Ok(location);
             }
@@ -91,7 +89,7 @@ namespace ReservationSystem.Controllers
                 var location = await _dao.GetLocationById(id);
                 if (location == null)
                 {
-                    return StatusCode(404);
+                    return ValidationProblem($"Location with id: {id} was not found.");
                 }
                 await _dao.DeleteLocation(id);
                 return StatusCode(200);
@@ -113,7 +111,7 @@ namespace ReservationSystem.Controllers
                 var location = await _dao.GetLocationById(id);
                 if (location == null)
                 {
-                    return StatusCode(404);
+                    return ValidationProblem($"Location with id: {id} was not found.");
                 }
                 await _dao.UpdateLocation(locationUpdates, id);
                 return StatusCode(200);

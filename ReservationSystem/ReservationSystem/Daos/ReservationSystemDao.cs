@@ -18,17 +18,6 @@ namespace ReservationSystem.Daos
         
         //************************************************************
         //Begin Location Sql Requests
-        public async Task CreateLocation(Location newLocation)
-        {
-            var query = $"INSERT INTO Location ([Name], City, [State], Capacity, OpenTime, CloseTime, BrandId) " +
-                $"VALUES ('{newLocation.Name}', '{newLocation.City}', '{newLocation.State}', {newLocation.Capacity}," +
-                $" '{newLocation.OpenTime}', '{newLocation.CloseTime}', {newLocation.BrandId})";
-            using (var connection = _context.CreateConnection())
-            {
-                await connection.ExecuteAsync(query);
-            }
-        }
-
         public async Task<IEnumerable<Location>> GetLocations()
         {
             var query = "SELECT * FROM Location";
@@ -48,6 +37,16 @@ namespace ReservationSystem.Daos
                 var location = await connection.QueryFirstOrDefaultAsync<Location>(query);
 
                 return location;
+            }
+        }
+        public async Task CreateLocation(Location newLocation)
+        {
+            var query = $"INSERT INTO Location ([Name], City, [State], Capacity, OpenTime, CloseTime, BrandId) " +
+                $"VALUES ('{newLocation.Name}', '{newLocation.City}', '{newLocation.State}', {newLocation.Capacity}," +
+                $" '{newLocation.OpenTime}', '{newLocation.CloseTime}', {newLocation.BrandId})";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
             }
         }
 
@@ -71,6 +70,7 @@ namespace ReservationSystem.Daos
             }
         }
 
+        //End Location SQL Requests
         //***************************************************
         //Begin Customer SQL requests
 
@@ -85,16 +85,6 @@ namespace ReservationSystem.Daos
             }
         }
 
-        public async Task CreateCustomer(Customer newCustomer)
-        {
-            var query = $"INSERT INTO Customer (FirstName, LastName, Phone, Email) " +
-                $"VALUES ('{newCustomer.FirstName}', '{newCustomer.LastName}', '{newCustomer.Phone}', '{newCustomer.Email}')";
-            using (var connection = _context.CreateConnection())
-            {
-                await connection.ExecuteAsync(query);
-            }
-        }
-
         public async Task<Customer> GetCustomerById(int id)
         {
             var query = $"SELECT * FROM Customer WHERE Id = {id}";
@@ -103,6 +93,15 @@ namespace ReservationSystem.Daos
                 var customer = await connection.QueryFirstOrDefaultAsync<Customer>(query);
 
                 return customer;
+            }
+        }
+        public async Task CreateCustomer(Customer newCustomer)
+        {
+            var query = $"INSERT INTO Customer (FirstName, LastName, Phone, Email) " +
+                $"VALUES ('{newCustomer.FirstName}', '{newCustomer.LastName}', '{newCustomer.Phone}', '{newCustomer.Email}')";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
             }
         }
 
@@ -140,16 +139,6 @@ namespace ReservationSystem.Daos
             }
         }
 
-        public async Task CreateReservation(Reservation newReservation)
-        {
-            var query = $"INSERT INTO Reservation ([Length], PartySize, ReservationTime, CustomerId, LocationId) " +
-                $"VALUES ('{newReservation.Length}', '{newReservation.PartySize}', '{newReservation.ReservationTime}', {newReservation.CustomerId}, {newReservation.LocationId})";
-            using (var connection = _context.CreateConnection())
-            {
-                await connection.ExecuteAsync(query);
-            }
-        }
-
         public async Task<Reservation> GetReservationById(int id)
         {
             var query = $"SELECT * FROM Reservation WHERE Id = {id}";
@@ -183,6 +172,16 @@ namespace ReservationSystem.Daos
             }
         }
 
+        public async Task CreateReservation(Reservation newReservation)
+        {
+            var query = $"INSERT INTO Reservation ([Length], PartySize, ReservationTime, CustomerId, LocationId) " +
+                $"VALUES ('{newReservation.Length}', '{newReservation.PartySize}', '{newReservation.ReservationTime}', {newReservation.CustomerId}, {newReservation.LocationId})";
+            using (var connection = _context.CreateConnection())
+            {
+                await connection.ExecuteAsync(query);
+            }
+        }
+
         public async Task DeleteReservation(int id)
         {
             var query = $"DELETE FROM Reservation WHERE Id = {id}";
@@ -201,7 +200,8 @@ namespace ReservationSystem.Daos
                 await connection.ExecuteAsync(query);
             }
         }
-    }
 
-    
+        //End Reservation SQL Requests
+        //******************************************************
+    }
 }
