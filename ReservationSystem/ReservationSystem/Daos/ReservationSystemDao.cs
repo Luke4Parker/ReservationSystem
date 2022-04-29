@@ -216,20 +216,12 @@ namespace ReservationSystem.Daos
             }
         }
 
-        public async Task<IEnumerable<Reservation>> GetReservationByCustomerId(int id)
+        public async Task<IEnumerable<Reservation>> GetReservationByLocationAndDate(int locId, string date)
         {
-            var query = $"SELECT * FROM Reservation WHERE CustomerId = {id}";
-            using (var connection = _context.CreateConnection())
-            {
-                var reservation = await connection.QueryAsync<Reservation>(query);
-
-                return reservation.ToList();
-            }
-        }
-
-        public async Task<IEnumerable<Reservation>> GetReservationByLocationId(int id)
-        {
-            var query = $"SELECT * FROM Reservation WHERE LocationId = {id}";
+            string[] dateSegments = date.Split("-");
+            dateSegments[2] = dateSegments[2].Split(" ")[0];
+            var query = $"SELECT * FROM Reservation WHERE LocationId = {locId} " +
+                $"AND YEAR(ReservationTime) = {dateSegments[0]} AND MONTH(ReservationTime) = {dateSegments[1]} AND DAY(ReservationTime) = {dateSegments[2]}";
             using (var connection = _context.CreateConnection())
             {
                 var reservation = await connection.QueryAsync<Reservation>(query);

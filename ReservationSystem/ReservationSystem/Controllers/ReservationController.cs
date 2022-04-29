@@ -48,7 +48,7 @@ namespace ReservationSystem.Controllers
             try
             {
                 int capacityCounter = (int)newReservation.PartySize;
-                var reservations = await _dao.GetReservationByLocationId(int.Parse(newReservation.LocationId));
+                var reservations = await _dao.GetReservationByLocationAndDate(int.Parse(newReservation.LocationId), newReservation.ReservationTime);
                 var location = await _dao.GetLocationById(int.Parse(newReservation.LocationId));
 
                 //Validates that reservations aren't added outside operating hours
@@ -163,7 +163,7 @@ namespace ReservationSystem.Controllers
             try
             {
                 int capacityCounter = (int)reservationUpdates.PartySize;
-                var reservations = await _dao.GetReservationByLocationId(int.Parse(reservationUpdates.LocationId));
+                var reservations = await _dao.GetReservationByLocationAndDate(int.Parse(reservationUpdates.LocationId), reservationUpdates.ReservationTime);
                 var location = await _dao.GetLocationById(int.Parse(reservationUpdates.LocationId));
 
                 //Validates that reservations aren't added outside operating hours
