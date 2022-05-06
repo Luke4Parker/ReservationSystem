@@ -51,7 +51,7 @@ namespace ReservationSystem.Controllers
                 var reservations = await _dao.GetReservationByLocationAndDate(int.Parse(newReservation.LocationId), newReservation.ReservationTime);
                 var location = await _dao.GetLocationById(int.Parse(newReservation.LocationId));
 
-                //Validates that reservations aren't added outside operating hours
+                
                 if (DateTime.Parse(newReservation.ReservationTime.ToString()).Hour >= DateTime.Parse(location.OpenTime.ToString()).Hour &&
                     DateTime.Parse(newReservation.ReservationTime.ToString()).Hour < DateTime.Parse(location.CloseTime.ToString()).Hour)
                 {
