@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ReservationSystem.Models;
@@ -221,7 +220,9 @@ namespace ReservationSystem.Daos
             string[] dateSegments = date.Split("-");
             dateSegments[2] = dateSegments[2].Split(" ")[0];
             var query = $"SELECT * FROM Reservation WHERE LocationId = {locId} " +
-                $"AND YEAR(ReservationTime) = {dateSegments[0]} AND MONTH(ReservationTime) = {dateSegments[1]} AND DAY(ReservationTime) = {dateSegments[2]}";
+                $"AND YEAR(ReservationTime) = {dateSegments[0]} " +
+                $"AND MONTH(ReservationTime) = {dateSegments[1]} " +
+                $"AND DAY(ReservationTime) = {dateSegments[2]}";
             using (var connection = _context.CreateConnection())
             {
                 var reservation = await connection.QueryAsync<Reservation>(query);
