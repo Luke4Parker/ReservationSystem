@@ -45,7 +45,7 @@ namespace ReservationSystem.Controllers
             try
             {
                 await _dao.CreateLocation(newLocation);
-                return StatusCode(204);
+                return StatusCode(200);
             }
             catch (Exception e)
             {
