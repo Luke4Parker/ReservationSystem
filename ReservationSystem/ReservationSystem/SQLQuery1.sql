@@ -65,6 +65,4 @@ INSERT INTO Reservation VALUES (1, 15,'2022-12-24 10:00:00', 5, 3);
 
 --DROP TABLE Reservation;
 
-INSERT INTO Reservation([Length], PartySize, ReservationTime, CustomerId, LocationId) VALUES (1, 1, '2022-02-14', 1, 1);
-
 SELECT * FROM Reservation;
