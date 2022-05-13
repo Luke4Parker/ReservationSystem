@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ReservationSystem.Models;
 using Microsoft.EntityFrameworkCore;
 using Dapper;
+using System;
 
 namespace ReservationSystem.Daos
 {
@@ -252,8 +253,8 @@ namespace ReservationSystem.Daos
 
         public async Task UpdateReservation(ReservationNullable reservationUpdates, int id)
         {
-            var query = $"UPDATE Reservation SET [Length] = {reservationUpdates.Length}, PartySize = {reservationUpdates.PartySize}, ReservationTime = '{reservationUpdates.ReservationTime}', " +
-                $"CustomerId = {reservationUpdates.CustomerId}, LocationId = {reservationUpdates.LocationId} WHERE Id = {id}";
+            var query = $"UPDATE Reservation SET [Length] = {reservationUpdates.Length}, PartySize = {reservationUpdates.PartySize}, ReservationTime = '{DateTime.Parse(reservationUpdates.ReservationTime)}', " +
+                $"CustomerId = {int.Parse(reservationUpdates.CustomerId)}, LocationId = {int.Parse(reservationUpdates.LocationId)} WHERE Id = {id}";
             using (var connection = _context.CreateConnection())
             {
                 await connection.ExecuteAsync(query);
